@@ -3,6 +3,7 @@ package com.example.tt.rasp;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -71,8 +72,7 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case MESSAGE_CODE:
-                        pbCentral.setVisibility(View.GONE);
-                        tvSchedule.setText(msg.obj.toString());
+
                         break;
                 }
             }
@@ -80,23 +80,7 @@ public class MainActivity extends AppCompatActivity {
         btnHelloWorld.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btnHelloWorld.setVisibility(View.GONE);
-                pbCentral.setVisibility(View.VISIBLE);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        File file = new File(Environment
-                                .getExternalStorageDirectory().toString()
-                                + "/rasp.xlsx");
-                        try {
-                            EdDay result = ExcelUtil.readFromExcel(file.toString());
-                            Message msg = handler.obtainMessage(MESSAGE_CODE, result);
-                            handler.sendMessage(msg);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+                new MyTask().execute();
             }
         });
 
@@ -169,6 +153,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    class MyTask extends AsyncTask<Void, Void, EdDay> {
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            btnHelloWorld.setVisibility(View.GONE);
+            pbCentral.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected EdDay doInBackground(Void... params) {
+            File file = new File(Environment
+                    .getExternalStorageDirectory().toString()
+                    + "/rasp.xlsx");
+
+            EdDay result = null;
+            try {
+                result = ExcelUtil.readFromExcel(file.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(EdDay result) {
+            super.onPostExecute(result);
+            pbCentral.setVisibility(View.GONE);
+            tvSchedule.setText(result.toString());
+        }
+    }
 }
 
