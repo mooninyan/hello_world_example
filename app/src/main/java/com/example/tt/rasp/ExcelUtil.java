@@ -34,7 +34,7 @@ public class ExcelUtil {
         calendar.setTime(new Date());
         int evenWeek = calendar.get(Calendar.WEEK_OF_YEAR)%2;
         Log.d("myLog", "четность:" + evenWeek);
-
+        Log.d("myLog", file);
         XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream(file));
         XSSFSheet myExcelSheet = myExcelBook.getSheet("ИВТ-М-1-Д-2016-2");
 

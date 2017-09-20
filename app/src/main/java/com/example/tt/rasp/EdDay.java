@@ -5,21 +5,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.RealmClass;
+import io.realm.annotations.Required;
+
 /**
  * Created by tt on 14.09.17.
  */
+@RealmClass
+public class EdDay extends RealmObject {
 
-public class EdDay {
-
+    @Required
     private String day;
-    private List<Lesson> lessons = new ArrayList<>();
+
+    private RealmList<Lesson> lessons = new RealmList<>();
 
     public void setDay(String day) {
         this.day = day;
     }
 
-    public void putLesson(String lesson, String time, String class_number){
-        lessons.add(new Lesson(lesson,time,class_number));
+    public void putLesson(String subject, String time, String class_number){
+        lessons.add(new Lesson(subject,time,class_number));
     }
 
     public String getDay() {

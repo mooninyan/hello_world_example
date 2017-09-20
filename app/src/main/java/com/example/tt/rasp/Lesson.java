@@ -1,13 +1,19 @@
 package com.example.tt.rasp;
 
+import io.realm.RealmModel;
+import io.realm.annotations.RealmClass;
+
 /**
  * Created by tt on 14.09.17.
  */
 
-class Lesson {
-    String subject;
-    String time;
-    String classroom;
+@RealmClass
+public class Lesson implements RealmModel {
+    private String subject;
+    private String time;
+    private String classroom;
+
+    public Lesson(){};
 
     public Lesson(String name, String time, String classroom) {
         this.subject = name;

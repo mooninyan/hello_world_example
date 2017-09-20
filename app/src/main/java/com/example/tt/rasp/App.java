@@ -1,6 +1,8 @@
 package com.example.tt.rasp;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -17,5 +19,12 @@ public class App extends Application {
         RealmConfiguration config = new RealmConfiguration.Builder().build();
         Realm.setDefaultConfiguration(config);
     }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
+
 
 }

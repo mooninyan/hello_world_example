@@ -29,6 +29,8 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.realm.Realm;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
+    private Realm mRealm;
+
 
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -72,26 +76,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        btnHelloWorld.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new MyTask().execute();
-            }
-        });
-
-
+        mRealm = Realm.getDefaultInstance();
         setSupportActionBar(tbOne);
         mRecyclerView.setVisibility(View.INVISIBLE);
 
         verifyStoragePermissions(this);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadSchedule(false);
-            }
-        });
     }
+
+    @OnClick(R.id.fab)
+    public void onFabClick() {
+        loadSchedule(false);
+    }
+
+    @OnClick(R.id.look_button)
+    public void onLookBtnClick(){
+        new MyTask().execute();
+    }
+
 
     private void loadSchedule(boolean restart) {
         LoaderManager.LoaderCallbacks<String> callbacks = new MyCallbacks();
@@ -178,6 +179,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(EdDay result) {
             super.onPostExecute(result);
+            mRealm.beginTransaction();
+            EdDay edDay = mRealm.createObject(EdDay.class);
+            edDay.setDay(result.getDay());
+
+            for(Lesson lesson: result.getLessons()) {
+                edDay.putLesson(lesson.getSubject(),lesson.getTime(),lesson.getClassroom());
+            }
+            mRealm.commitTransaction();
+
             DataAdapter adapter = new DataAdapter(MainActivity.this, result.getLessons());
             mRecyclerView.setAdapter(adapter);
             tvDay.setText(result.getDay());
