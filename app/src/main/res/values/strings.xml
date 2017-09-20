@@ -1,4 +1,5 @@
 <resources>
-    <string subject="app_name">Rasp</string>
-    <string subject="action_settings">Settings</string>
+    <string name="app_name">Rasp</string>
+    <string name="action_settings">Settings</string>
+    <string name="look_schedule">Смотреть расписание</string>
 </resources>

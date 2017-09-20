@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         setSupportActionBar(tbOne);
-        RecyclerView.Adapter adapter = new DataAdapter(this, edDay.getLessons());
-        mRecyclerView.setAdapter(adapter);
+
+
         Log.d("myLog", Environment
                 .getExternalStorageDirectory().toString());
         verifyStoragePermissions(this);
@@ -177,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(EdDay result) {
             super.onPostExecute(result);
+            RecyclerView.Adapter adapter = new DataAdapter(MainActivity.this, edDay.getLessons());
+            mRecyclerView.setAdapter(adapter);
             pbCentral.setVisibility(View.GONE);
             tvSchedule.setText(result.toString());
         }
