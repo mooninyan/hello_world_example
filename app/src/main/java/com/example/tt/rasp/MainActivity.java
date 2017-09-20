@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,9 +39,9 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     @BindView(R.id.look_button)
-    TextView btnHelloWorld;
+    Button btnHelloWorld;
     @BindView(R.id.text_view_2)
-    TextView tvSchedule;
+    TextView tvDay;
     @BindView(R.id.toolbar)
     Toolbar tbOne;
     @BindView(R.id.pb)
@@ -50,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
-    EdDay edDay;
 
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -81,10 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         setSupportActionBar(tbOne);
+        mRecyclerView.setVisibility(View.INVISIBLE);
 
-
-        Log.d("myLog", Environment
-                .getExternalStorageDirectory().toString());
         verifyStoragePermissions(this);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -126,6 +124,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+
+
     private class MyCallbacks implements LoaderManager.LoaderCallbacks<String> {
 
         @Override
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
             File file = new File(Environment
                     .getExternalStorageDirectory().toString()
                     + "/rasp.xlsx");
-
+            EdDay edDay = null;
             try {
                 edDay = ExcelUtil.readFromExcel(file.toString());
             } catch (IOException e) {
@@ -177,10 +178,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(EdDay result) {
             super.onPostExecute(result);
-            RecyclerView.Adapter adapter = new DataAdapter(MainActivity.this, edDay.getLessons());
+            DataAdapter adapter = new DataAdapter(MainActivity.this, result.getLessons());
             mRecyclerView.setAdapter(adapter);
+            tvDay.setText(result.getDay());
+            tvDay.setVisibility(View.VISIBLE);
             pbCentral.setVisibility(View.GONE);
-            tvSchedule.setText(result.toString());
+            mRecyclerView.setVisibility(View.VISIBLE);
         }
     }
 }
