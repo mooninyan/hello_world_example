@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -46,7 +47,10 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar pbCentral;
     @BindView(R.id.fab)
     FloatingActionButton fab;
-    Handler handler;
+    @BindView(R.id.recyclerView)
+    RecyclerView mRecyclerView;
+
+    EdDay edDay;
 
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -67,16 +71,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case MESSAGE_CODE:
 
-                        break;
-                }
-            }
-        };
         btnHelloWorld.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         setSupportActionBar(tbOne);
+        RecyclerView.Adapter adapter = new DataAdapter(this, edDay.getLessons());
+        mRecyclerView.setAdapter(adapter);
         Log.d("myLog", Environment
                 .getExternalStorageDirectory().toString());
         verifyStoragePermissions(this);
@@ -168,14 +165,13 @@ public class MainActivity extends AppCompatActivity {
                     .getExternalStorageDirectory().toString()
                     + "/rasp.xlsx");
 
-            EdDay result = null;
             try {
-                result = ExcelUtil.readFromExcel(file.toString());
+                edDay = ExcelUtil.readFromExcel(file.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            return result;
+            return edDay;
         }
 
         @Override

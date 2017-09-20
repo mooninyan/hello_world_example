@@ -35,5 +35,23 @@ public class EdDay {
         return day + ":"  + lessons.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EdDay)) return false;
 
+        EdDay edDay = (EdDay) o;
+
+        if (getDay() != null ? !getDay().equals(edDay.getDay()) : edDay.getDay() != null)
+            return false;
+        return getLessons() != null ? getLessons().equals(edDay.getLessons()) : edDay.getLessons() == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getDay() != null ? getDay().hashCode() : 0;
+        result = 31 * result + (getLessons() != null ? getLessons().hashCode() : 0);
+        return result;
+    }
 }

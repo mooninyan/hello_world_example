@@ -5,22 +5,22 @@ package com.example.tt.rasp;
  */
 
 class Lesson {
-    String name;
+    String subject;
     String time;
-    String classNumber;
+    String classroom;
 
-    public Lesson(String name, String time, String classNumber) {
-        this.name = name;
+    public Lesson(String name, String time, String classroom) {
+        this.subject = name;
         this.time = time;
-        this.classNumber = classNumber;
+        this.classroom = classroom;
     }
 
-    public String getName() {
-        return name;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public String getTime() {
@@ -31,16 +31,16 @@ class Lesson {
         this.time = time;
     }
 
-    public String getClassNumber() {
-        return classNumber;
+    public String getClassroom() {
+        return classroom;
     }
 
-    public void setClassNumber(String classNumber) {
-        this.classNumber = classNumber;
+    public void setClassroom(String classroom) {
+        this.classroom = classroom;
     }
 
     @Override
     public String toString() {
-        return name + "\n " + time + "\n " + classNumber + "\n \n";
+        return subject + "\n " + time + "\n " + classroom + "\n \n";
     }
 }

@@ -47,14 +47,10 @@ public class ExcelUtil {
         hashMap.put(FRIDAY, 78);
         hashMap.put(SATURDAY, 94);
 
-
-
-
-
-
         int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
 //        TODO: убрать в прод
         currentDay = 4;
+
         int neededRow = hashMap.get(currentDay);
         XSSFRow row = myExcelSheet.getRow(neededRow);
         Log.d("myLog", "day:" + currentDay + " ,row: " + neededRow);
