@@ -2,18 +2,15 @@ package com.example.tt.rasp;
 
 import android.util.Log;
 
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import static com.example.tt.rasp.Constants.FRIDAY;
 import static com.example.tt.rasp.Constants.MONDAY;
@@ -80,6 +77,7 @@ public class ExcelUtil {
         for(Lesson lesson: edDay.getLessons()) {
             Log.d("myLog", edDay.getDay() + ": " + lesson.toString());
         }
+
 
         return edDay;
     }

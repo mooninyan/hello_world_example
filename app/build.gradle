@@ -7,7 +7,7 @@ android {
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.example.tt.rasp"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -28,11 +28,12 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
     }
-
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['poi-3.12-android-a.jar', 'poi-ooxml-schemas-3.12-20150511-a.jar'],
+            dir: 'libs')
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -41,7 +42,6 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
 
-    compile 'com.android.support:multidex:1.0.1'
-    compile "com.jakewharton:butterknife:8.3.0"
+    compile 'com.jakewharton:butterknife:8.3.0'
     apt "com.jakewharton:butterknife-compiler:8.3.0"
 }
