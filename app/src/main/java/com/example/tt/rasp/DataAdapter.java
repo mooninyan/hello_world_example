@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.List;
 
-class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
+public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     private LayoutInflater inflater;
     private List<Lesson> lessons;

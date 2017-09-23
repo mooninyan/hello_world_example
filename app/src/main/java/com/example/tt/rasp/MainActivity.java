@@ -2,12 +2,12 @@ package com.example.tt.rasp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
 
     private Realm mRealm;
+    private ExcelUtil mEu = new ExcelUtil();
+    private DataAdapter mAdapter;
 
 
     public static void verifyStoragePermissions(Activity activity) {
@@ -78,7 +82,18 @@ public class MainActivity extends AppCompatActivity {
 
         mRealm = Realm.getDefaultInstance();
         setSupportActionBar(tbOne);
-        mRecyclerView.setVisibility(View.INVISIBLE);
+
+
+        RealmResults<EdDay> edDays = mRealm.where(EdDay.class)
+                .equalTo("day", Constants.weekDay.get(mEu.currentDay)).findAll();
+        EdDay edDay = edDays.get(0);
+
+        mAdapter = new DataAdapter(MainActivity.this, edDay.getLessons());
+        mRecyclerView.setAdapter(mAdapter);
+        tvDay.setText(edDay.getDay());
+        tvDay.setVisibility(View.VISIBLE);
+
+
 
         verifyStoragePermissions(this);
     }
@@ -118,11 +133,19 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.open_xlsx) {
+            File file = new File(Environment
+                    .getExternalStorageDirectory().toString()
+                    + "/rasp.xlsx");
+            Intent intent = new Intent();
+            intent.setAction(android.content.Intent.ACTION_VIEW);
+            String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(".XLSX");
+            intent.setDataAndType(Uri.fromFile(file), mime);
+            startActivity(intent);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
+
     }
 
 
@@ -152,49 +175,42 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class MyTask extends AsyncTask<Void, Void, EdDay> {
+    class MyTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             btnHelloWorld.setVisibility(View.GONE);
             pbCentral.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
         }
 
+
         @Override
-        protected EdDay doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
             File file = new File(Environment
                     .getExternalStorageDirectory().toString()
                     + "/rasp.xlsx");
-            EdDay edDay = null;
             try {
-                edDay = ExcelUtil.readFromExcel(file.toString());
+                mEu.readFromExcel(file.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            return edDay;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(EdDay result) {
-            super.onPostExecute(result);
-            mRealm.beginTransaction();
-            EdDay edDay = mRealm.createObject(EdDay.class);
-            edDay.setDay(result.getDay());
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
 
-            for(Lesson lesson: result.getLessons()) {
-                edDay.putLesson(lesson.getSubject(),lesson.getTime(),lesson.getClassroom());
-            }
-            mRealm.commitTransaction();
+            Log.d("myLog", "" + mRealm.where(EdDay.class)
+                    .equalTo("day",Constants.weekDay.get(ExcelUtil.currentDay)).findAll());
+            Log.d("MyLog", "mRealm open");
 
-            DataAdapter adapter = new DataAdapter(MainActivity.this, result.getLessons());
-            mRecyclerView.setAdapter(adapter);
-            tvDay.setText(result.getDay());
-            tvDay.setVisibility(View.VISIBLE);
             pbCentral.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
         }
+
     }
 }
 

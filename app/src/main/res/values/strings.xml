@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Rasp</string>
-    <string name="action_settings">Settings</string>
-    <string name="look_schedule">Смотреть расписание</string>
+    <string name="open_xlsx">Открыть xlsx</string>
+    <string name="refresh_schedule">Обновить расписание</string>
 </resources>

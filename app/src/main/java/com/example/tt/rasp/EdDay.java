@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
 import io.realm.annotations.Required;
 
@@ -16,6 +17,7 @@ import io.realm.annotations.Required;
 @RealmClass
 public class EdDay extends RealmObject {
 
+    @PrimaryKey
     @Required
     private String day;
 

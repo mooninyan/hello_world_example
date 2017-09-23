@@ -12,6 +12,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import io.realm.Realm;
+
 import static com.example.tt.rasp.Constants.FRIDAY;
 import static com.example.tt.rasp.Constants.MONDAY;
 import static com.example.tt.rasp.Constants.SATURDAY;
@@ -25,46 +27,50 @@ import static com.example.tt.rasp.Constants.WEDNESDAY;
  */
 
 public class ExcelUtil {
-    public static EdDay readFromExcel(String file) throws IOException {
+
+    private Calendar mCalendar = Calendar.getInstance();
+//    public int currentDay = mCalendar.get(Calendar.DAY_OF_WEEK);
+    public static int currentDay = 4;
+    private Realm mRealm;
+
+
+    ExcelUtil() {
+        mCalendar.setTime(new Date());
+    }
+
+    public void readFromExcel(String file) throws IOException {
+        mRealm = Realm.getDefaultInstance();
         EdDay edDay = new EdDay();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        int evenWeek = calendar.get(Calendar.WEEK_OF_YEAR)%2;
+        int evenWeek = mCalendar.get(Calendar.WEEK_OF_YEAR) % 2;
         Log.d("myLog", "четность:" + evenWeek);
         Log.d("myLog", file);
         XSSFWorkbook myExcelBook = new XSSFWorkbook(new FileInputStream(file));
         XSSFSheet myExcelSheet = myExcelBook.getSheet("ИВТ-М-1-Д-2016-2");
 
 
-        HashMap<Integer, Integer> hashMap = new HashMap<>(6);
-        hashMap.put(MONDAY, 14);
-        hashMap.put(TUESDAY, 40);
-        hashMap.put(WEDNESDAY, 46);
-        hashMap.put(THURSDAY, 62);
-        hashMap.put(FRIDAY, 78);
-        hashMap.put(SATURDAY, 94);
+        HashMap<Integer, Integer> weekMap = new HashMap<>(6);
+        weekMap.put(MONDAY, 14);
+        weekMap.put(TUESDAY, 40);
+        weekMap.put(WEDNESDAY, 46);
+        weekMap.put(THURSDAY, 62);
+        weekMap.put(FRIDAY, 78);
+        weekMap.put(SATURDAY, 94);
 
-        int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
-//        TODO: убрать в прод
-        currentDay = 4;
-
-        int neededRow = hashMap.get(currentDay);
+        int neededRow = weekMap.get(currentDay);
         XSSFRow row = myExcelSheet.getRow(neededRow);
         Log.d("myLog", "day:" + currentDay + " ,row: " + neededRow);
-
-        String day = "day";
 
         Log.d("myLog", "What is this:" + row.getCell(0).getStringCellValue());
         Log.d("myLog", "What is this:" + row.getCell(1).getStringCellValue());
         Log.d("myLog", "What is this:" + row.getCell(2).getStringCellValue());
 
 
-
         edDay.setDay(row.getCell(0).getStringCellValue());
 
 
         for (int i = 0; i <= 7; i++) {
-            if (myExcelSheet.getRow(neededRow + i * 2 + evenWeek).getCell(3).getStringCellValue().equals("")) continue;
+            if (myExcelSheet.getRow(neededRow + i * 2 + evenWeek).getCell(3).getStringCellValue().equals(""))
+                continue;
 
             edDay.putLesson(myExcelSheet.getRow(neededRow + i * 2 + evenWeek).getCell(3).getStringCellValue(),
                     myExcelSheet.getRow(neededRow + i * 2).getCell(1).getStringCellValue(),
@@ -72,13 +78,29 @@ public class ExcelUtil {
         }
 
 
+        writeToBase(edDay);
 
         myExcelBook.close();
-        for(Lesson lesson: edDay.getLessons()) {
+        for (Lesson lesson : edDay.getLessons()) {
             Log.d("myLog", edDay.getDay() + ": " + lesson.toString());
         }
 
+        mRealm.close();
+    }
 
-        return edDay;
+    public void writeToBase(EdDay result){
+        final EdDay edDay = result;
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                // This will create a new object in Realm or throw an exception if the
+                // object already exists (same primary key)
+                // realm.copyToRealm(obj);
+
+                // This will update an existing object with the same primary key
+                // or create a new object if an object with no primary key = 42
+                realm.copyToRealmOrUpdate(edDay);
+            }
+        });
     }
 }
