@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private Realm mRealm;
     private ExcelUtil mEu = new ExcelUtil();
     private DataAdapter mAdapter;
+    private EdDay mEdDay = new EdDay();
 
 
     public static void verifyStoragePermissions(Activity activity) {
@@ -83,19 +84,28 @@ public class MainActivity extends AppCompatActivity {
         mRealm = Realm.getDefaultInstance();
         setSupportActionBar(tbOne);
 
+        updateEdDay();
 
-        RealmResults<EdDay> edDays = mRealm.where(EdDay.class)
-                .equalTo("day", Constants.weekDay.get(mEu.currentDay)).findAll();
-        EdDay edDay = edDays.get(0);
-
-        mAdapter = new DataAdapter(MainActivity.this, edDay.getLessons());
+        mAdapter = new DataAdapter(MainActivity.this, mEdDay.getLessons());
         mRecyclerView.setAdapter(mAdapter);
-        tvDay.setText(edDay.getDay());
+        tvDay.setText(mEdDay.getDay());
         tvDay.setVisibility(View.VISIBLE);
 
 
 
         verifyStoragePermissions(this);
+    }
+
+    private void updateEdDay() {
+        if(mRealm.isEmpty()){
+            mEdDay.setDay("Среда");
+            mEdDay.putLesson("будет", "тут", "предмет");
+        } else {
+            RealmResults<EdDay> edDays = mRealm.where(EdDay.class)
+                    .equalTo("day", Constants.weekDay.get(ExcelUtil.currentDay)).findAll();
+            mEdDay = edDays.get(0);
+            Log.d("MyLog", mEdDay.toString());
+        }
     }
 
     @OnClick(R.id.fab)
@@ -183,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
             btnHelloWorld.setVisibility(View.GONE);
             pbCentral.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
+            tvDay.setVisibility(View.GONE);
         }
 
 
@@ -206,7 +217,10 @@ public class MainActivity extends AppCompatActivity {
             Log.d("myLog", "" + mRealm.where(EdDay.class)
                     .equalTo("day",Constants.weekDay.get(ExcelUtil.currentDay)).findAll());
             Log.d("MyLog", "mRealm open");
+            updateEdDay();
+            mAdapter.notifyDataSetChanged();
 
+            tvDay.setVisibility(View.VISIBLE);
             pbCentral.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
         }
