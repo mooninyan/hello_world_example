@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,6 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     @BindView(R.id.look_button)
-    Button btnHelloWorld;
+    Button btnRefresh;
     @BindView(R.id.text_view_2)
     TextView tvDay;
     @BindView(R.id.toolbar)
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private ExcelUtil mEu = new ExcelUtil();
     private DataAdapter mAdapter;
     private EdDay mEdDay = new EdDay();
+    private RealmList<Lesson> mRmLessons = new RealmList<>();
+    private LinearLayoutManager mLayoutManager;
 
 
     public static void verifyStoragePermissions(Activity activity) {
@@ -86,7 +90,9 @@ public class MainActivity extends AppCompatActivity {
 
         updateEdDay();
         // вот тут нотифай не работает из-за mEdDay.getLessons()
-        mAdapter = new DataAdapter(MainActivity.this, mEdDay.getLessons());
+        mAdapter = new DataAdapter(MainActivity.this, mRmLessons);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         tvDay.setText(mEdDay.getDay());
         tvDay.setVisibility(View.VISIBLE);
@@ -97,14 +103,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateEdDay() {
-        if(mRealm.isEmpty()){
-            mEdDay.setDay("Среда");
-            mEdDay.putLesson("будет", "тут", "предмет");
-        } else {
+        if(mRealm.where(EdDay.class)
+                .equalTo("day", Constants.weekDay.get(mEu.getCurrentDay())).findAll().isEmpty()){
+            mEdDay.setDay(Constants.weekDay.get(mEu.getCurrentDay()));
+            mRecyclerView.setVisibility(View.GONE);
+        }
+        else {
             RealmResults<EdDay> edDays = mRealm.where(EdDay.class)
-                    .equalTo("day", Constants.weekDay.get(ExcelUtil.currentDay)).findAll();
+                    .equalTo("day", Constants.weekDay.get(mEu.getCurrentDay())).findAll();
             mEdDay = edDays.get(0);
-            Log.d("MyLog", mEdDay.toString());
+            mRmLessons.clear();
+            mRmLessons.addAll(mEdDay.getLessons());
+            Log.d("myLog", mRmLessons.get(0).toString());
         }
     }
 
@@ -175,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     + "/rasp.xlsx");
             if (file.exists()) {
                 Toast.makeText(getApplicationContext(), "file downloaded", Toast.LENGTH_SHORT).show();
-                btnHelloWorld.setVisibility(View.VISIBLE);
+                btnRefresh.setEnabled(true);
             }
         }
 
@@ -190,10 +200,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            btnHelloWorld.setVisibility(View.GONE);
+            btnRefresh.setEnabled(false);
             pbCentral.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
             tvDay.setVisibility(View.GONE);
+            fab.setEnabled(false);
         }
 
 
@@ -215,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
 
             Log.d("myLog", "" + mRealm.where(EdDay.class)
-                    .equalTo("day",Constants.weekDay.get(ExcelUtil.currentDay)).findAll());
+                    .equalTo("day",Constants.weekDay.get(mEu.getCurrentDay())).findAll());
             Log.d("MyLog", "mRealm open");
             updateEdDay();
             mAdapter.notifyDataSetChanged();
@@ -223,8 +234,9 @@ public class MainActivity extends AppCompatActivity {
             tvDay.setVisibility(View.VISIBLE);
             pbCentral.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
+            btnRefresh.setEnabled(true);
+            fab.setEnabled(true);
         }
-
     }
 }
 

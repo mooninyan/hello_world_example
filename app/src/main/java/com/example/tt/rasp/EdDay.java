@@ -35,7 +35,7 @@ public class EdDay extends RealmObject {
         return day;
     }
 
-    public List<Lesson> getLessons() {
+    public RealmList<Lesson> getLessons() {
         return lessons;
     }
 

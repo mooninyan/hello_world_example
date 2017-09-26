@@ -12,12 +12,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.List;
 
+import io.realm.RealmList;
+
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     private LayoutInflater inflater;
-    private List<Lesson> lessons;
+    private RealmList<Lesson> lessons;
 
-    DataAdapter(Context context, List<Lesson> lessons) {
+    DataAdapter(Context context, RealmList<Lesson> lessons) {
         this.lessons = lessons;
         this.inflater = LayoutInflater.from(context);
     }
@@ -51,4 +53,6 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             classroomView = (TextView) view.findViewById(R.id.classroom);
         }
     }
+
+
 }

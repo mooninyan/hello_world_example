@@ -29,10 +29,13 @@ import static com.example.tt.rasp.Constants.WEDNESDAY;
 public class ExcelUtil {
 
     private Calendar mCalendar = Calendar.getInstance();
-//    public int currentDay = mCalendar.get(Calendar.DAY_OF_WEEK);
-    public static int currentDay = 4;
+    private int currentDay = mCalendar.get(Calendar.DAY_OF_WEEK);
+//    public static int currentDay = 4;
     private Realm mRealm;
 
+    public int getCurrentDay() {
+        return currentDay;
+    }
 
     ExcelUtil() {
         mCalendar.setTime(new Date());
@@ -50,7 +53,7 @@ public class ExcelUtil {
 
         HashMap<Integer, Integer> weekMap = new HashMap<>(6);
         weekMap.put(MONDAY, 14);
-        weekMap.put(TUESDAY, 40);
+        weekMap.put(TUESDAY, 30);
         weekMap.put(WEDNESDAY, 46);
         weekMap.put(THURSDAY, 62);
         weekMap.put(FRIDAY, 78);
@@ -65,7 +68,7 @@ public class ExcelUtil {
         Log.d("myLog", "What is this:" + row.getCell(2).getStringCellValue());
 
 
-        edDay.setDay(row.getCell(0).getStringCellValue());
+        edDay.setDay(Constants.weekDay.get(currentDay));
 
 
         for (int i = 0; i <= 7; i++) {
