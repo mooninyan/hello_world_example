@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(tbOne);
 
         updateEdDay();
-
+        // вот тут нотифай не работает из-за mEdDay.getLessons()
         mAdapter = new DataAdapter(MainActivity.this, mEdDay.getLessons());
         mRecyclerView.setAdapter(mAdapter);
         tvDay.setText(mEdDay.getDay());
