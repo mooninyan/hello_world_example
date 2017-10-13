@@ -17,11 +17,11 @@ public final class Constants {
     public static final HashMap<Integer, String> weekDay = new HashMap<>();
 
     static {
-        weekDay.put(2, "Понедельник");
-        weekDay.put(3, "Вторник");
-        weekDay.put(4, "Среда");
-        weekDay.put(5, "Четверг");
-        weekDay.put(6, "Пятница");
-        weekDay.put(7, "Суббота");
+        weekDay.put(MONDAY, "Понедельник");
+        weekDay.put(TUESDAY, "Вторник");
+        weekDay.put(WEDNESDAY, "Среда");
+        weekDay.put(THURSDAY, "Четверг");
+        weekDay.put(FRIDAY, "Пятница");
+        weekDay.put(SATURDAY, "Суббота");
     }
 }

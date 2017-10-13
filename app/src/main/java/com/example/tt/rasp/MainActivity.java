@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    @BindView(R.id.look_button)
+    @BindView(R.id.refresh_button)
     Button btnRefresh;
     @BindView(R.id.text_view_2)
     TextView tvDay;
@@ -103,18 +103,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateEdDay() {
-        if(mRealm.where(EdDay.class)
-                .equalTo("day", Constants.weekDay.get(mEu.getCurrentDay())).findAll().isEmpty()){
+
+        RealmResults<EdDay> query = mRealm.where(EdDay.class)
+                .equalTo("day", Constants.weekDay.get(mEu.getCurrentDay())).findAll();
+
+        if(query.isEmpty()){
             mEdDay.setDay(Constants.weekDay.get(mEu.getCurrentDay()));
             mRecyclerView.setVisibility(View.GONE);
         }
         else {
-            RealmResults<EdDay> edDays = mRealm.where(EdDay.class)
-                    .equalTo("day", Constants.weekDay.get(mEu.getCurrentDay())).findAll();
-            mEdDay = edDays.get(0);
+            mEdDay = query.get(0);
             mRmLessons.clear();
             mRmLessons.addAll(mEdDay.getLessons());
-            Log.d("myLog", mRmLessons.get(0).toString());
         }
     }
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         loadSchedule(false);
     }
 
-    @OnClick(R.id.look_button)
+    @OnClick(R.id.refresh_button)
     public void onLookBtnClick(){
         new MyTask().execute();
     }

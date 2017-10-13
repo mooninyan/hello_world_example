@@ -1,5 +1,6 @@
 package com.example.tt.rasp;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -13,6 +14,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 import static com.example.tt.rasp.Constants.FRIDAY;
 import static com.example.tt.rasp.Constants.MONDAY;
@@ -32,6 +35,7 @@ public class ExcelUtil {
     private int currentDay = mCalendar.get(Calendar.DAY_OF_WEEK);
 //    public static int currentDay = 4;
     private Realm mRealm;
+    HashMap<Integer, Integer> weekMap;
 
     public int getCurrentDay() {
         return currentDay;
@@ -43,7 +47,7 @@ public class ExcelUtil {
 
     public void readFromExcel(String file) throws IOException {
         mRealm = Realm.getDefaultInstance();
-        EdDay edDay = new EdDay();
+
         int evenWeek = mCalendar.get(Calendar.WEEK_OF_YEAR) % 2;
         Log.d("myLog", "четность:" + evenWeek);
         Log.d("myLog", file);
@@ -51,7 +55,7 @@ public class ExcelUtil {
         XSSFSheet myExcelSheet = myExcelBook.getSheet("ИВТ-М-1-Д-2016-2");
 
 
-        HashMap<Integer, Integer> weekMap = new HashMap<>(6);
+        weekMap = new HashMap<>(6);
         weekMap.put(MONDAY, 14);
         weekMap.put(TUESDAY, 30);
         weekMap.put(WEDNESDAY, 46);
@@ -59,16 +63,47 @@ public class ExcelUtil {
         weekMap.put(FRIDAY, 78);
         weekMap.put(SATURDAY, 94);
 
-        int neededRow = weekMap.get(currentDay);
-        XSSFRow row = myExcelSheet.getRow(neededRow);
-        Log.d("myLog", "day:" + currentDay + " ,row: " + neededRow);
+//        int neededRow = weekMap.get(currentDay);
+//
+//        Log.d("myLog", "day:" + currentDay + " ,row: " + neededRow);
+//
 
-        Log.d("myLog", "What is this:" + row.getCell(0).getStringCellValue());
-        Log.d("myLog", "What is this:" + row.getCell(1).getStringCellValue());
-        Log.d("myLog", "What is this:" + row.getCell(2).getStringCellValue());
+//        XSSFRow row = myExcelSheet.getRow(neededRow);
+//        Log.d("myLog", "What is this:" + row.getCell(0).getStringCellValue());
+//        Log.d("myLog", "What is this:" + row.getCell(1).getStringCellValue());
+//        Log.d("myLog", "What is this:" + row.getCell(2).getStringCellValue());
+
+        final RealmResults<Lesson> results = mRealm.where(Lesson.class).findAll();
+
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                results.deleteAllFromRealm();
+            }
+        });
 
 
-        edDay.setDay(Constants.weekDay.get(currentDay));
+
+        for(int dayOfWeek: Constants.weekDay.keySet()) {
+
+            EdDay edDay = getEdDay(evenWeek, myExcelSheet, dayOfWeek);
+            writeToBase(edDay);
+
+//            myExcelBook.close();
+//            for (Lesson lesson : edDay.getLessons()) {
+//                Log.d("myLog", edDay.getDay() + ": " + lesson.toString());
+//            }
+        }
+//        Log.d("myLog", mRealm.)
+
+        mRealm.close();
+    }
+
+    @NonNull
+    private EdDay getEdDay(int evenWeek, XSSFSheet myExcelSheet, int dayOfWeek) {
+        int neededRow = weekMap.get(dayOfWeek);
+        EdDay edDay = new EdDay();
+        edDay.setDay(Constants.weekDay.get(dayOfWeek));
 
 
         for (int i = 0; i <= 7; i++) {
@@ -79,16 +114,7 @@ public class ExcelUtil {
                     myExcelSheet.getRow(neededRow + i * 2).getCell(1).getStringCellValue(),
                     myExcelSheet.getRow(neededRow + i * 2 + evenWeek).getCell(4).getStringCellValue());
         }
-
-
-        writeToBase(edDay);
-
-        myExcelBook.close();
-        for (Lesson lesson : edDay.getLessons()) {
-            Log.d("myLog", edDay.getDay() + ": " + lesson.toString());
-        }
-
-        mRealm.close();
+        return edDay;
     }
 
     public void writeToBase(EdDay result){
