@@ -1,4 +1,4 @@
-package com.example.tt.rasp;
+package com.example.tt.rasp.model;
 
 import java.util.HashMap;
 

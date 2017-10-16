@@ -3,7 +3,10 @@ package com.example.tt.rasp;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.apache.poi.xssf.usermodel.XSSFRow;
+import com.example.tt.rasp.model.Constants;
+import com.example.tt.rasp.model.EdDay;
+import com.example.tt.rasp.model.Lesson;
+
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -14,15 +17,14 @@ import java.util.Date;
 import java.util.HashMap;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
 import io.realm.RealmResults;
 
-import static com.example.tt.rasp.Constants.FRIDAY;
-import static com.example.tt.rasp.Constants.MONDAY;
-import static com.example.tt.rasp.Constants.SATURDAY;
-import static com.example.tt.rasp.Constants.THURSDAY;
-import static com.example.tt.rasp.Constants.TUESDAY;
-import static com.example.tt.rasp.Constants.WEDNESDAY;
+import static com.example.tt.rasp.model.Constants.FRIDAY;
+import static com.example.tt.rasp.model.Constants.MONDAY;
+import static com.example.tt.rasp.model.Constants.SATURDAY;
+import static com.example.tt.rasp.model.Constants.THURSDAY;
+import static com.example.tt.rasp.model.Constants.TUESDAY;
+import static com.example.tt.rasp.model.Constants.WEDNESDAY;
 
 
 /**
@@ -41,7 +43,7 @@ public class ExcelUtil {
         return currentDay;
     }
 
-    ExcelUtil() {
+    public ExcelUtil() {
         mCalendar.setTime(new Date());
     }
 

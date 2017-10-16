@@ -1,9 +1,4 @@
-package com.example.tt.rasp;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
+package com.example.tt.rasp.model;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;

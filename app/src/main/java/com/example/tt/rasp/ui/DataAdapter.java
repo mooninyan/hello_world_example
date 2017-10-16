@@ -1,4 +1,4 @@
-package com.example.tt.rasp;
+package com.example.tt.rasp.ui;
 
 /**
  * Created by tt on 20.09.17.
@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import java.util.List;
+
+import com.example.tt.rasp.R;
+import com.example.tt.rasp.model.Lesson;
 
 import io.realm.RealmList;
 
