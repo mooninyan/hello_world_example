@@ -177,7 +177,7 @@ public class ParentFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             btnRefresh.setEnabled(false);
-            pb.setVisibility(View.GONE);
+            pb.setVisibility(View.VISIBLE);
         }
 
 
@@ -208,7 +208,7 @@ public class ParentFragment extends Fragment {
 //            pbCentral.setVisibility(View.GONE);
 //            mRecyclerView.setVisibility(View.VISIBLE);
             btnRefresh.setEnabled(true);
-            pb.setVisibility(View.VISIBLE);
+            pb.setVisibility(View.GONE);
         }
     }
 

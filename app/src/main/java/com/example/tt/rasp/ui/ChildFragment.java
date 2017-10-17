@@ -36,10 +36,6 @@ public class ChildFragment extends Fragment {
     @BindView(R.id.text_view_2)
     TextView tvDay;
 
-
-    @BindView(R.id.pb)
-    ProgressBar pbCentral;
-
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
